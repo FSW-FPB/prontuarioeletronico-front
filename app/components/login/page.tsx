@@ -18,10 +18,9 @@ const LoginPage = () => {
 
     return (
         <div className={styles.container}>
-            <h1>Login</h1>
             <form onSubmit={handleLogin} className={styles.form}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="username">Usuário:</label>
+                    <label htmlFor="username">E-mail:</label>
                     <input
                         type="text"
                         id="username"
@@ -30,8 +29,8 @@ const LoginPage = () => {
                         className={styles.input}
                     />
                 </div>
-                <div className={styles.inputGroup}>
-                    <label htmlFor="password">Senha:</label>
+                <div className={styles.inputGroup2}>
+                    <label htmlFor="password">Senha: </label>
                     <input
                         type="password"
                         id="password"
@@ -41,7 +40,6 @@ const LoginPage = () => {
                     />
                 </div>
                 <button type="submit" className={styles.button}>Entrar</button>
-                <button type="button" onClick={() => router.push('/login/signup')} className={styles.button}>Cadastrar</button>
             </form>
         </div>
     );
