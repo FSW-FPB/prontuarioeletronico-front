@@ -1,5 +1,5 @@
 import React from "react";
-import ClientHome from "../../components/clientpage/clientHome"; // ajuste o caminho se necessário
+import ClientHome from "../../components/clientpage/paginicial/clientHome"; // ajuste o caminho se necessário
 
 function HomePage() {
   return (

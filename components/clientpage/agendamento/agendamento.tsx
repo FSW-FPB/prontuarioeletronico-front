@@ -17,7 +17,9 @@ function Agendamento() {
             />
           </div>
 
-          <h1 className="text-2xl font-semibold mb-4 text-center">Agende aqui sua consulta</h1>
+          <h1 className="text-2xl font-semibold mb-4 text-center text-gray-900">
+            Agende aqui sua consulta
+          </h1>
           <p className="text-gray-600 mb-8 text-center">
             Simplificamos o processo para você marcar seus compromissos, garantindo uma experiência prática e eficiente.
           </p>
@@ -103,10 +105,10 @@ function Agendamento() {
                 className="w-full bg-gray-50 border border-teal-500 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 required
               >
-                <option value="">Escolha uma especialidade</option>
-                <option value="cardiologia">Cardiologia</option>
-                <option value="dermatologia">Dermatologia</option>
-                <option value="pediatria">Pediatria</option>
+                <option value="" className="text-gray-600">Escolha uma especialidade</option>
+                <option value="cardiologia" className="text-gray-800">Cardiologia</option>
+                <option value="dermatologia" className="text-gray-800">Dermatologia</option>
+                <option value="pediatria" className="text-gray-800">Pediatria</option>
                 {/* Adicione mais especialidades conforme necessário */}
               </select>
             </div>
