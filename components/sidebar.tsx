@@ -1,9 +1,9 @@
 import React from "react";
-import Link from "next/link"; // Importa Link para navegação
+import Link from "next/link";
 import "./clientpage/ClientHome.css";
 
 type SidebarProps = {
-  activePage: string; // Indica qual página está ativa
+  activePage: string; 
 };
 
 const Sidebar = ({ activePage }: SidebarProps) => {
