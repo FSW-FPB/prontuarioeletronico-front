@@ -1,7 +1,9 @@
+import Agendamento from "../../agendamento";
+
 export default function Client() {
     return(
         <div>
-            <h1>Página do cliente</h1>
+            <Agendamento />
         </div>
     )
 }
