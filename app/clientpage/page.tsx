@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-import ClientHome from "../../components/clientpage/paginicial/clientHome"; // ajuste o caminho se necessário
+import ClientHome from "../../components/clientpage/paginicial/clientHome";
 
 function HomePage() {
   return (

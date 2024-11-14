@@ -11,7 +11,11 @@ function ClientHome() {
       <main className="flex-grow">
         {/* Cabeçalho */}
         <div className="w-full mb-12">
-          <img src="https://via.placeholder.com/800x100" alt="Imagem inicial" className="w-full h-auto" />
+          <img
+            src="https://via.placeholder.com/800x100"
+            alt="Imagem inicial"
+            className="w-full h-auto"
+          />
         </div>
 
         {/* Informações do Usuário */}
@@ -23,7 +27,9 @@ function ClientHome() {
               className="w-36 h-36 rounded-full mb-4"
             />
             <div>
-              <h3 className="text-lg mt-4 font-semibold text-gray-700">Nome Usuário</h3>
+              <h3 className="text-lg mt-4 font-semibold text-gray-700">
+                Nome Usuário
+              </h3>
               <p className="text-gray-500">emailusuario@gmail.com</p>
             </div>
           </div>
@@ -58,7 +64,9 @@ function ClientHome() {
         </section>
 
         {/* Título das Informações Médicas */}
-        <h2 className="text-lg font-semibold px-40 py-4 text-gray-700">Informações médicas:</h2>
+        <h2 className="text-lg font-semibold px-40 py-4 text-gray-700">
+          Informações médicas:
+        </h2>
 
         {/* Informações Médicas */}
         <section className="flex px-16 py-10">

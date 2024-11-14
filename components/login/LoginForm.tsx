@@ -1,17 +1,47 @@
-import { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
+import { logarPaciente } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
-// src/components/LoginForm.tsx
 export default function LoginForm() {
-  const [tipoUsuario, setTipoUsuario] = useState("");
+  const { setToken } = useAuth(); // Acesso ao contexto
+  const [tipoUsuario, setTipoUsuario] = useState<string>("1"); // Tipo como string
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); // Impede o comportamento padrão do formulário
+
+    const loginData = { email, senha, tipoUsuario };
+    const response = await logarPaciente(loginData);
+
+    console.log(response); // Verificando a resposta
+
+    if (response.success && response.tokenData) {
+      setToken(response.tokenData.token);
+      console.log(response.tokenData);
+      router.push("/clientpage"); // Navega para a página do cliente
+    } else {
+      setError(response.error || "Erro desconhecido");
+      console.log(response.error || "Erro desconhecido");
+    }
+  };
 
   return (
     <div
       className="d-flex flex-column justify-content-center h-100 px-5"
       style={{ width: "100%" }}
     >
-      <form id="login-form" method="POST" className="w-75">
+      <form
+        id="login-form"
+        method="POST"
+        className="w-75"
+        onSubmit={handleLogin}
+      >
         <div className="form-group">
           <label htmlFor="tipo-usuario" className="titulo-input">
             Tipo de Usuário
@@ -22,16 +52,13 @@ export default function LoginForm() {
             className="form-control"
             required
             value={tipoUsuario}
-            onChange={(e) => setTipoUsuario(e.target.value)}
+            onChange={(e) => setTipoUsuario(e.target.value)} // A mudança de valor é tratada diretamente aqui
           >
-            <option value="paciente" selected>
-              Paciente
-            </option>
-            <option value="administrador">Administrador</option>
-            <option value="medico">Médico</option>
+            <option value="1">Paciente</option>
+            <option value="2">Administrador</option>
+            <option value="3">Médico</option>
           </select>
         </div>
-
         <div className="form-group">
           <label htmlFor="email" className="titulo-input">
             E-mail
@@ -63,7 +90,7 @@ export default function LoginForm() {
             onChange={(e) => setSenha(e.target.value)}
           />
         </div>
-
+        {error && <div className="text-danger">{error}</div>}
         <div className="btn-container text-center">
           <button
             type="submit"
