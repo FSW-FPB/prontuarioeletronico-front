@@ -1,16 +1,13 @@
 import React from "react";
-import Sidebar from "../../components/sidebar";
+import ListEspera from "../../components/clientpage/listespera/listespera";
 
-function ListEspera() {
+
+function ListaEspera() {
   return (
-    <div className="lista-espera-page">
-      <Sidebar activePage="lista-espera" />
-      <main className="main-content">
-        <h1>Lista de Espera</h1>
-        <p>Bem-vindo à página de agendamento.</p>
-      </main>
+    <div>
+      <ListEspera />
     </div>
   );
 }
 
-export default ListEspera;
+export default ListaEspera;
