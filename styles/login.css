@@ -1,0 +1,156 @@
+@import url("https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Konkhmer+Sleokchher&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Geologica";
+  box-sizing: border-box;
+}
+
+.container-login {
+  height: 100vh;
+  display: flex;
+  align-items: center; /* Alinha verticalmente ao centro */
+  justify-content: space-between; /* Espaço entre as partes esquerda e direita */
+  background-size: cover;
+  padding: 0 20px; /* Espaçamento lateral opcional */
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+  background-repeat: no-repeat;
+}
+
+.left-side {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding-left: 250px;
+  padding-bottom: 300px;
+}
+
+.right-side {
+  width: 40%; /* Ajuste conforme necessário para equilibrar o espaço */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 200px;
+  padding-right: 60px;
+}
+
+.left-side .logo,
+.left-side .h1-login {
+  display: inline-flex;
+  color: white;
+  font-family: "Konkhmer Sleokchher";
+  font-size: 50px;
+  font-weight: 400;
+  line-height: 48.78px;
+  text-align: left;
+}
+
+.left-side .logo,
+.left-side img {
+  width: 36px;
+  height: 32px;
+}
+
+.titulo {
+  color: white;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 60px;
+  padding-top: 100px;
+}
+
+.subtitulo,
+.titulo-input {
+  padding-top: 10px;
+  font-family: "Geologica";
+  color: white;
+}
+
+.subtitulo {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.titulo-input {
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 28.75px;
+  text-align: left;
+}
+
+.right-side form {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  height: auto;
+  background: rgba(217, 217, 217, 0.5); /* Fundo com 70% de opacidade */
+  border-radius: 30px; /* Bordas arredondadas */
+  padding: 20px; /* Espaçamento interno */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra leve */
+  backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+  border: 1px solid rgba(90, 194, 187, 0.466);
+  gap: 5px;
+}
+
+.right-side input[type="email"],
+.right-side input[type="password"],
+#tipo-usuario {
+  align-items: center;
+  width: 95%; /* Faz o input ocupar toda a largura disponível */
+  height: 60px;
+  padding: 10px; /* Espaçamento interno */
+  margin: 10px 10px; /* Espaçamento entre os inputs */
+  border: 2px solid rgba(9, 145, 154, 1); /* Borda leve */
+  border-radius: 10px; /* Bordas arredondadas */
+  background: rgba(217, 217, 217, 0.6); /* Fundo 100% opaco */
+  outline: none; /* Remove a borda azul padrão ao focar */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  font-size: 16px; /* Tamanho da fonte */
+  transition: all 0.3s ease; /* Transição suave para os efeitos */
+}
+
+.right-side input[type="email"]:focus,
+.right-side input[type="password"]:focus,
+#tipo-usuario {
+  border-color: #0faba7; /* Cor de borda ao focar */
+  box-shadow: 0 2px 8px rgba(15, 171, 167, 0.4); /* Sombra mais destacada */
+}
+
+.right-side button {
+  align-items: center;
+  width: 95%; /* Faz o input ocupar toda a largura disponível */
+  height: 50px;
+  margin-top: 15px;
+}
+
+.container-login {
+  position: relative; /* Necessário para posicionar a imagem em relação ao contêiner */
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden; /* Para garantir que a imagem não ultrapasse os limites do contêiner */
+}
+
+.background-image {
+  position: absolute; /* Posiciona a imagem em relação ao contêiner pai */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Faz a imagem cobrir completamente o fundo sem distorção */
+  z-index: 1; /* Garante que a imagem fique por trás dos outros elementos */
+}
+
+.left-side,
+.right-side {
+  position: relative;
+  z-index: 2; /* Necessário para que os conteúdos fiquem à frente da imagem */
+}
