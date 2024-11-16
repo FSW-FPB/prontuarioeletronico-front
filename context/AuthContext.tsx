@@ -17,10 +17,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
-  // Usar useEffect para acessar o localStorage somente no lado do cliente
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("token");
+      const storedToken = sessionStorage.getItem("token");
       setToken(storedToken); // Atualiza o estado apenas no lado do cliente
     }
   }, []);

@@ -13,7 +13,7 @@ const logarPaciente = async ({ email, senha }: AuthProps) => {
       senha,
     });
     const tokenData: ITokenLogado = response.data;
-    localStorage.setItem("token", tokenData.token);
+    sessionStorage.setItem("token", tokenData.token);
 
     return { success: true, tokenData };
   } catch (error) {
