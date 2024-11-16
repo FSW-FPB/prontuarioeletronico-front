@@ -5,24 +5,31 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
-  const { setToken } = useAuth(); // Acesso ao contexto
-  const [tipoUsuario, setTipoUsuario] = useState<string>("1"); // Tipo como string
+  const { setToken, setIdUsuario, setTipoUsuario } = useAuth();
+  const [tipoUsuarioSelected, setTipoUsuarioSelected] = useState<string>("1");
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
 
   const router = useRouter();
 
+  useEffect(() => {
+    sessionStorage.clear(); // Limpa o sessionStorage ao carregar a página
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Impede o comportamento padrão do formulário
 
-    const loginData = { email, senha, tipoUsuario };
+    const loginData = { email, senha };
     const response = await logarPaciente(loginData);
 
     console.log(response); // Verificando a resposta
 
     if (response.success && response.tokenData) {
       setToken(response.tokenData.token);
+      setTipoUsuario(response.tokenData.tipoUsuario);
+      setIdUsuario(response.tokenData.id_usuario);
       console.log(response.tokenData);
       router.push("/clientpage"); // Navega para a página do cliente
     } else {
@@ -51,8 +58,8 @@ export default function LoginForm() {
             name="tipo-usuario"
             className="form-control"
             required
-            value={tipoUsuario}
-            onChange={(e) => setTipoUsuario(e.target.value)} // A mudança de valor é tratada diretamente aqui
+            value={tipoUsuarioSelected}
+            onChange={(e) => setTipoUsuarioSelected(e.target.value)} // A mudança de valor é tratada diretamente aqui
           >
             <option value="1">Paciente</option>
             <option value="2">Administrador</option>
