@@ -1,14 +1,22 @@
 "use client";
 import React from "react";
 import ClientHome from "../../components/clientpage/paginicial/clientHome";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
+
+function HomePageContent() {
+  const { idUsuario, tipoUsuario } = useAuth(); // Acessa o idUsuario do AuthContext
+
+  if (!idUsuario || !tipoUsuario) {
+    return <div>Carregando...</div>; // Exibe um estado de carregamento ou mensagem
+  }
+
+  return <ClientHome idUser={idUsuario} tipoUsuario={tipoUsuario} />;
+}
 
 function HomePage() {
-  const idUsuario = 1;
-
   return (
     <AuthProvider>
-      <ClientHome idPaciente={Number(idUsuario)} />
+      <HomePageContent />
     </AuthProvider>
   );
 }

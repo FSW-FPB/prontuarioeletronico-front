@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { logarPaciente } from "@/hooks/useAuth";
+import { logarAtendente, logarMedico, logarPaciente } from "@/hooks/useAuth";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -22,16 +22,24 @@ export default function LoginForm() {
     e.preventDefault(); // Impede o comportamento padrão do formulário
 
     const loginData = { email, senha };
-    const response = await logarPaciente(loginData);
 
-    if (response.success && response.tokenData) {
+    let response;
+    if (tipoUsuarioSelected === "1") {
+      response = await logarPaciente(loginData);
+    } else if (tipoUsuarioSelected === "2") {
+      response = await logarAtendente(loginData);
+    } else if (tipoUsuarioSelected === "3") {
+      response = await logarMedico(loginData);
+    }
+
+    if (response && response.success && response.tokenData) {
       setToken(response.tokenData.token);
       setTipoUsuario(response.tokenData.tipoUsuario);
       setIdUsuario(response.tokenData.id_usuario);
       router.push("/clientpage"); // Navega para a página do cliente
     } else {
-      setError(response.error || "Erro desconhecido");
-      console.log(response.error || "Erro desconhecido");
+      setError(response?.error || "Erro desconhecido");
+      console.log(response?.error || "Erro desconhecido");
     }
   };
 
