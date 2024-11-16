@@ -14,6 +14,8 @@ const logarPaciente = async ({ email, senha }: AuthProps) => {
     });
     const tokenData: ITokenLogado = response.data;
     sessionStorage.setItem("token", tokenData.token);
+    sessionStorage.setItem("tipo_usuario", tokenData.tipoUsuario.toString());
+    sessionStorage.setItem("id_usuario", tokenData.id_usuario.toString());
 
     return { success: true, tokenData };
   } catch (error) {

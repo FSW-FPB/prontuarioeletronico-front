@@ -24,13 +24,10 @@ export default function LoginForm() {
     const loginData = { email, senha };
     const response = await logarPaciente(loginData);
 
-    console.log(response); // Verificando a resposta
-
     if (response.success && response.tokenData) {
       setToken(response.tokenData.token);
       setTipoUsuario(response.tokenData.tipoUsuario);
       setIdUsuario(response.tokenData.id_usuario);
-      console.log(response.tokenData);
       router.push("/clientpage"); // Navega para a página do cliente
     } else {
       setError(response.error || "Erro desconhecido");
