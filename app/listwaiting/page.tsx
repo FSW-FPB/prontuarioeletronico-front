@@ -1,6 +1,6 @@
+"use client";
 import React from "react";
 import ListEspera from "../../components/clientpage/listespera/listespera";
-
 
 function ListaEspera() {
   return (

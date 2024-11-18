@@ -1,11 +1,12 @@
 "use client";
 import Apresentation from "@/components/login/Apresentation";
 import LoginForm from "@/components/login/LoginForm";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthProvider } from "@/context/AuthContext";
+import "@/app/globals.css";
 
 export default function HomePage() {
   return (
-    <>
+    <AuthProvider>
       <div className="container-login">
         <img
           src="/assets/gradient.png"
@@ -29,6 +30,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-    </>
+    </AuthProvider>
   );
 }
