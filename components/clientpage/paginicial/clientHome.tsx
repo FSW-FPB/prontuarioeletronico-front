@@ -178,7 +178,7 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
           <section className="flex justify-center w-full py-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 max-w-4xl w-full text-gray-700">
               <div>
-                <p className="font-semibold">Especialidade</p>
+                <p className="font-semibold">Especialidade(s)</p>
                 <p className="text-gray-500">
                   {medico?.especialidade || "Não informado"}
                 </p>

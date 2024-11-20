@@ -5,16 +5,15 @@ import { FaWalking } from "react-icons/fa";
 function ListEspera() {
   return (
     <div className="flex h-screen">
-      <Sidebar activePage="lista-espera" />
-      
+      <Sidebar activePage="listwaiting" />
+
       {/* Conteúdo Principal com Imagem Placeholder */}
       <main className="main-content flex-1 bg-gray-50">
-        
         {/* Imagem Placeholder sem espaçamento */}
         <div className="header-image">
-          <img 
-            src="https://via.placeholder.com/800x100" 
-            alt="Imagem de cabeçalho" 
+          <img
+            src="https://via.placeholder.com/800x100"
+            alt="Imagem de cabeçalho"
             className="w-full h-auto"
           />
         </div>
@@ -25,9 +24,10 @@ function ListEspera() {
             Você está vendo a sua posição atual na fila de atendimento.
           </h1>
           <p className="text-gray-700 mb-12">
-            À medida que avançamos, sua posição mudará até que você seja chamado.
+            À medida que avançamos, sua posição mudará até que você seja
+            chamado.
           </p>
-          
+
           {/* Ícone centralizado */}
           <div className="text-8xl text-gray-800 mb-6">
             <FaWalking />

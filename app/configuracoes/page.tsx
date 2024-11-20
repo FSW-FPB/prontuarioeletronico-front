@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
 import Configuracoes from "@/components/clientpage/configuracoes/configuracoes";
+import { AuthProvider } from "@/context/AuthContext";
 
 function Config() {
   return (
-    <div>
+    <AuthProvider>
       <Configuracoes />
-    </div>
+    </AuthProvider>
   );
 }
 
