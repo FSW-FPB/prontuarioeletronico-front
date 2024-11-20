@@ -4,6 +4,8 @@ import IPaciente from "@/types/IPaciente";
 import IMedico from "@/types/IMedico";
 import { fetchPacienteById } from "@/hooks/usePacients";
 import { fetchMedicoById } from "@/hooks/useMedicos";
+import { fetchAtendenteById } from "@/hooks/useAtendente";
+import IAtendente from "@/types/IAtendente";
 
 interface ClientHomeProps {
   idUser: number;
@@ -13,6 +15,7 @@ interface ClientHomeProps {
 function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
   const [paciente, setPaciente] = useState<IPaciente | null>(null);
   const [medico, setMedico] = useState<IMedico | null>(null);
+  const [atendente, setAtendente] = useState<IAtendente | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,12 +27,18 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
         if (tipoUsuario === 1) {
           const data = await fetchPacienteById(idUser);
           setMedico(null);
+          setAtendente(null);
           setPaciente(data);
         } else if (tipoUsuario === 2) {
           const data = await fetchMedicoById(idUser);
           setPaciente(null);
+          setAtendente(null);
           setMedico(data);
-          console.log("Médico data:", data);
+        } else if (tipoUsuario === 3) {
+          const data = await fetchAtendenteById(idUser);
+          setPaciente(null);
+          setMedico(null);
+          setAtendente(data);
         }
       } catch (error: any) {
         setError(error.message || "Erro ao carregar os dados.");
@@ -65,7 +74,10 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                 tipoUsuario === 1
                   ? paciente?.dadosPessoais.imgUrl ||
                     "https://via.placeholder.com/150"
-                  : medico?.dadosPessoais.imgUrl ||
+                  : tipoUsuario === 2
+                  ? medico?.dadosPessoais.imgUrl ||
+                    "https://via.placeholder.com/150"
+                  : atendente?.dadosPessoais.imgUrl ||
                     "https://via.placeholder.com/150"
               }
               alt="Foto do usuário"
@@ -75,12 +87,16 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
               <h3 className="text-lg mt-4 font-semibold text-gray-700">
                 {tipoUsuario === 1
                   ? paciente?.dadosPessoais.nome || "Nome Usuário"
-                  : medico?.dadosPessoais.nome || "Nome Médico"}
+                  : tipoUsuario === 2
+                  ? medico?.dadosPessoais.nome || "Nome Médico"
+                  : atendente?.dadosPessoais.nome || "Nome Atendente"}
               </h3>
               <p className="text-gray-500">
                 {tipoUsuario === 1
                   ? paciente?.email || "emailusuario@gmail.com"
-                  : medico?.email || "emailmedico@gmail.com"}
+                  : tipoUsuario === 2
+                  ? medico?.email || "emailmedico@gmail.com"
+                  : atendente?.email || "emailatendente@gmail.com"}
               </p>
             </div>
           </div>
@@ -97,9 +113,15 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                       : paciente?.dadosPessoais.genero === "F"
                       ? "Feminino"
                       : "Não informado"
-                    : medico?.dadosPessoais.genero === "M"
+                    : tipoUsuario === 2
+                    ? medico?.dadosPessoais.genero === "M"
+                      ? "Masculino"
+                      : medico?.dadosPessoais.genero === "F"
+                      ? "Feminino"
+                      : "Não informado"
+                    : atendente?.dadosPessoais.genero === "M"
                     ? "Masculino"
-                    : medico?.dadosPessoais.genero === "F"
+                    : atendente?.dadosPessoais.genero === "F"
                     ? "Feminino"
                     : "Não informado"}
                 </p>
@@ -109,7 +131,10 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                 <p className="text-gray-500">
                   {tipoUsuario === 1
                     ? paciente?.dadosPessoais.data_nascimento || "Não informado"
-                    : medico?.dadosPessoais.data_nascimento || "Não informado"}
+                    : tipoUsuario === 2
+                    ? medico?.dadosPessoais.data_nascimento || "Não informado"
+                    : atendente?.dadosPessoais.data_nascimento ||
+                      "Não informado"}
                 </p>
               </div>
               <div>
@@ -117,7 +142,9 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                 <p className="text-gray-500">
                   {tipoUsuario === 1
                     ? paciente?.dadosPessoais.telefone || "Não informado"
-                    : medico?.dadosPessoais.telefone || "Não informado"}
+                    : tipoUsuario === 2
+                    ? medico?.dadosPessoais.telefone || "Não informado"
+                    : atendente?.dadosPessoais.telefone || "Não informado"}
                 </p>
               </div>
             </div>
@@ -127,7 +154,9 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                 <p className="text-gray-500">
                   {tipoUsuario === 1
                     ? paciente?.dadosPessoais.cep || "Não informado"
-                    : medico?.dadosPessoais.cep || "Não informado"}
+                    : tipoUsuario === 2
+                    ? medico?.dadosPessoais.cep || "Não informado"
+                    : atendente?.dadosPessoais.cep || "Não informado"}
                 </p>
               </div>
               <div>
@@ -135,18 +164,11 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                 <p className="text-gray-500">
                   {tipoUsuario === 1
                     ? paciente?.dadosPessoais.status || "Ativo"
-                    : medico?.dadosPessoais.status || "Ativo"}
+                    : tipoUsuario === 2
+                    ? medico?.dadosPessoais.status || "Ativo"
+                    : atendente?.dadosPessoais.status || "Ativo"}
                 </p>
               </div>
-
-              {tipoUsuario === 2 && (
-                <div>
-                  <p className="font-semibold">CRM</p>
-                  <p className="text-gray-500">
-                    {medico?.crm || "Não informado"}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </section>
