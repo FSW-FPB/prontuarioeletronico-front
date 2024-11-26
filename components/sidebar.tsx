@@ -12,6 +12,7 @@ import {
   faUser,
   faCalendarDays,
   faBedPulse,
+  faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/context/AuthContext";
 
@@ -60,6 +61,11 @@ const Sidebar = ({ activePage }: SidebarProps) => {
         title: "Controle de Médico",
         href: "/controle-medico",
         icon: faUserDoctor,
+      },
+      {
+        title: "Controle de Admin",
+        href: "/controle-atendente",
+        icon: faUserTie,
       },
       { title: "Configurações", href: "/configuracoes", icon: faCog },
     ],

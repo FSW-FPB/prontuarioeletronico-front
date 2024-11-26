@@ -169,6 +169,12 @@ function ClientHome({ idUser, tipoUsuario }: ClientHomeProps) {
                     : atendente?.dadosPessoais.status || "Ativo"}
                 </p>
               </div>
+              {tipoUsuario === 2 && (
+                <div>
+                  <p className="font-semibold">CRM</p>
+                  <p className="text-gray-500">{medico?.crm}</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
