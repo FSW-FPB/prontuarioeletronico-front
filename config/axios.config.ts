@@ -10,6 +10,11 @@ const axiosCID = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+const axiosPrescricao = axios.create({
+  baseURL: "http://localhost:5000",
+  headers: { "Content-Type": "application/json" },
+});
+
 axiosCadastro.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem("token");
@@ -24,4 +29,4 @@ axiosCadastro.interceptors.request.use(
   }
 );
 
-export { axiosCadastro, axiosCID };
+export { axiosCadastro, axiosCID, axiosPrescricao };
