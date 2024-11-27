@@ -11,34 +11,28 @@ import {
   TableRow,
   Typography,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
 } from "@mui/material";
 import {
-  fetchPacientes,
-  fetchPacienteById,
-  updatePaciente,
-  deletePaciente,
-} from "@/hooks/usePacients";
+  fetchAtendenteById,
+  fetchAtendentes,
+  deleteAtendente,
+} from "@/hooks/useAtendente";
 import { updateDadosPessoais } from "@/hooks/useDadosPessoais";
-import IPaciente from "@/types/IPaciente";
+import IAtendente from "@/types/IAtendente";
 import { IPageable } from "@/types/IPageable";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../EditModal";
 import DeleteModal from "../DeleteModal";
 
-const ListarPacientes = () => {
+const ListarAdmins = () => {
   const [pageable, setPageable] = useState<IPageable | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedPaciente, setSelectedPaciente] = useState<IPaciente | null>(
+  const [selectedAtendente, setselectedAtendente] = useState<IAtendente | null>(
     null
   );
   const [editedName, setEditedName] = useState("");
@@ -49,30 +43,27 @@ const ListarPacientes = () => {
   const [editedStatus, setEditedStatus] = useState("");
   const [editedGenero, setEditedGenero] = useState("");
   const [editedImgUrl, setEditedImgUrl] = useState("");
-  const [editedTipoSanguineo, setEditedTipoSanguineo] = useState("");
-  const [editedAlergia, setEditedAlergia] = useState("");
-  const [editedDoencasCronicas, setEditedDoencasCronicas] = useState("");
 
   const fetchData = async (pageNumber: number) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchPacientes(pageNumber);
+      const data = await fetchAtendentes(pageNumber);
       setPageable(data);
     } catch (err: any) {
-      console.error("Erro ao buscar pacientes:", err);
+      console.error("Erro ao buscar atendentes:", err);
       setError(err.message || "Erro desconhecido.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenEditModal = async (pacienteId: number) => {
+  const handleOpenEditModal = async (atendenteId: number) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchPacienteById(pacienteId);
-      setSelectedPaciente(data);
+      const data = await fetchAtendenteById(atendenteId);
+      setselectedAtendente(data);
       setEditedName(data.dadosPessoais.nome);
       setEditedCep(data.dadosPessoais.cep);
       setEditedCpf(data.dadosPessoais.cpf);
@@ -82,13 +73,9 @@ const ListarPacientes = () => {
       setEditedTelefone(data.dadosPessoais.telefone);
       setEditedImgUrl(data.dadosPessoais.imgUrl);
 
-      setEditedDoencasCronicas(data.doencasCronicas);
-      setEditedTipoSanguineo(data.tipoSanguineo);
-      setEditedAlergia(data.alergia);
-
       setOpenEditModal(true);
     } catch (err: any) {
-      console.error("Erro ao buscar dados do paciente:", err);
+      console.error("Erro ao buscar dados do atendente:", err);
       setError(err.message || "Erro desconhecido.");
     } finally {
       setLoading(false);
@@ -111,15 +98,15 @@ const ListarPacientes = () => {
     }
   };
 
-  const handleOpenDeleteModal = (paciente: IPaciente) => {
-    setSelectedPaciente(paciente);
+  const handleOpenDeleteModal = (atendente: IAtendente) => {
+    setselectedAtendente(atendente);
     setOpenDeleteModal(true);
   };
 
-  const handleEditPaciente = async () => {
-    if (selectedPaciente) {
+  const handleEditatendente = async () => {
+    if (selectedAtendente) {
       await updateDadosPessoais(
-        selectedPaciente.dadosPessoais.id,
+        selectedAtendente.dadosPessoais.id,
         editedName,
         editedCpf,
         editedTelefone,
@@ -129,21 +116,12 @@ const ListarPacientes = () => {
         editedGenero,
         editedImgUrl
       );
-
-      await updatePaciente(
-        selectedPaciente.id,
-        editedTipoSanguineo,
-        editedDoencasCronicas,
-        editedAlergia
-      );
-      fetchData(currentPage);
-      setOpenEditModal(false);
     }
   };
 
-  const handleDeletePaciente = () => {
-    if (selectedPaciente) {
-      deletePaciente(selectedPaciente.id);
+  const handleDeleteatendente = () => {
+    if (selectedAtendente) {
+      deleteAtendente(selectedAtendente.id);
       fetchData(currentPage);
       setOpenDeleteModal(false);
     }
@@ -152,7 +130,7 @@ const ListarPacientes = () => {
   return (
     <Box sx={{ padding: 2, mt: 6 }}>
       <Typography variant="h4" sx={{ mb: 2, color: "#696969" }}>
-        Listagem de Pacientes
+        Listagem de atendentes
       </Typography>
 
       {loading ? (
@@ -165,8 +143,8 @@ const ListarPacientes = () => {
             <>
               <TableContainer
                 sx={{
-                  maxHeight: pageable.content.length > 3 ? 350 : "auto", // Aplica o scroll se houver mais de 5 pacientes
-                  overflowY: pageable.content.length > 3 ? "auto" : "visible", // Ativa o scroll vertical se houver mais de 5 pacientes
+                  maxHeight: pageable.content.length > 3 ? 350 : "auto", // Aplica o scroll se houver mais de 5 atendentes
+                  overflowY: pageable.content.length > 3 ? "auto" : "visible", // Ativa o scroll vertical se houver mais de 5 atendentes
                 }}
               >
                 <Table>
@@ -191,22 +169,26 @@ const ListarPacientes = () => {
                     pageable.content.every(
                       (item) => "id" in item && "dadosPessoais" in item
                     ) ? (
-                      (pageable.content as IPaciente[])
+                      (pageable.content as IAtendente[])
                         .sort((a, b) => a.id - b.id)
-                        .map((paciente: IPaciente) => (
-                          <TableRow key={paciente.id}>
-                            <TableCell>{paciente.id}</TableCell>
-                            <TableCell>{paciente.dadosPessoais.nome}</TableCell>
-                            <TableCell>{paciente.email}</TableCell>
-                            <TableCell>{paciente.dadosPessoais.cpf}</TableCell>
+                        .map((atendente: IAtendente) => (
+                          <TableRow key={atendente.id}>
+                            <TableCell>{atendente.id}</TableCell>
+                            <TableCell>
+                              {atendente.dadosPessoais.nome}
+                            </TableCell>
+                            <TableCell>{atendente.email}</TableCell>
+                            <TableCell>{atendente.dadosPessoais.cpf}</TableCell>
                             <TableCell>
                               <IconButton
-                                onClick={() => handleOpenEditModal(paciente.id)}
+                                onClick={() =>
+                                  handleOpenEditModal(atendente.id)
+                                }
                               >
                                 <EditIcon />
                               </IconButton>
                               <IconButton
-                                onClick={() => handleOpenDeleteModal(paciente)}
+                                onClick={() => handleOpenDeleteModal(atendente)}
                               >
                                 <DeleteIcon />
                               </IconButton>
@@ -245,7 +227,7 @@ const ListarPacientes = () => {
               </Box>
 
               <EditModal
-                formType={1}
+                formType={3}
                 open={openEditModal}
                 setOpen={setOpenEditModal}
                 editedCep={editedCep}
@@ -264,24 +246,18 @@ const ListarPacientes = () => {
                 setEditedData_nascimento={setEditedData_nascimento}
                 editedStatus={editedStatus}
                 setEditedStatus={setEditedStatus}
-                editedDoencasCronicas={editedDoencasCronicas}
-                setEditedDoencasCronicas={setEditedDoencasCronicas}
-                editedTipoSanguineo={editedTipoSanguineo}
-                setEditedTipoSanguineo={setEditedTipoSanguineo}
-                editedAlergia={editedAlergia}
-                setEditedAlergia={setEditedAlergia}
-                handleEdit={handleEditPaciente}
+                handleEdit={handleEditatendente}
               />
 
               <DeleteModal
-                formType={1}
-                handleDelete={handleDeletePaciente}
+                formType={3}
+                handleDelete={handleDeleteatendente}
                 open={openDeleteModal}
                 setOpen={setOpenDeleteModal}
               />
             </>
           ) : (
-            <Typography>Nenhum paciente encontrado.</Typography>
+            <Typography>Nenhum atendente encontrado.</Typography>
           )}
         </>
       )}
@@ -289,4 +265,4 @@ const ListarPacientes = () => {
   );
 };
 
-export default ListarPacientes;
+export default ListarAdmins;

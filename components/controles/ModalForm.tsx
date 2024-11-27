@@ -174,6 +174,27 @@ const ModalForm: FC<ModalFormProps> = ({
               />
             </>
           )}
+
+          {formType === 2 && (
+            <>
+              <TextField
+                label="CRM"
+                fullWidth
+                name="crm"
+                value={formData.crm}
+                onChange={handleInputChange}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Especialidade(s)"
+                fullWidth
+                name="especialidade"
+                value={formData.especialidade}
+                onChange={handleInputChange}
+                sx={{ mb: 2 }}
+              />
+            </>
+          )}
           <Button
             type="submit"
             variant="contained"

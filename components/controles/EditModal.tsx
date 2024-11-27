@@ -32,7 +32,7 @@ interface EditModalProps {
   setEditedImgUrl: (value: string) => void;
   editedGenero: string;
   setEditedGenero: (value: string) => void;
-  handleEditPaciente: () => void;
+  handleEdit: () => void;
 
   /* Dados Paciente */
   editedTipoSanguineo?: string;
@@ -68,7 +68,7 @@ const EditModal: FC<EditModalProps> = ({
   setEditedStatus,
   editedTelefone,
   setEditedTelefone,
-  handleEditPaciente,
+  handleEdit,
   formType,
   editedAlergia,
   setEditedAlergia,
@@ -234,7 +234,7 @@ const EditModal: FC<EditModalProps> = ({
         <Button onClick={() => setOpen(false)} color="primary">
           Cancelar
         </Button>
-        <Button onClick={handleEditPaciente} color="primary">
+        <Button onClick={handleEdit} color="primary">
           Salvar
         </Button>
       </DialogActions>
