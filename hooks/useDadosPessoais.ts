@@ -80,4 +80,48 @@ const createDadosPessoais = async (
   }
 };
 
-export { fetchDadosPessoaisByCPF, createDadosPessoais };
+const updateDadosPessoais = async (
+  idDados: number,
+  nome: string,
+  cpf: string,
+  telefone: string,
+  cep: string,
+  status: string,
+  data_nascimento: string,
+  genero: string,
+  imgUrl: string
+): Promise<IDadosPessoais> => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token de autenticação não encontrado");
+    }
+
+    const response = await axiosCadastro.put(
+      `/dados-pessoais/${idDados}`,
+      {
+        nome,
+        cpf,
+        telefone,
+        cep,
+        data_nascimento,
+        status,
+        imgUrl,
+        genero,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar dados Pessoais", error);
+    throw new Error("Falha ao atualizar dados Pessoais");
+  }
+};
+
+export { fetchDadosPessoaisByCPF, createDadosPessoais, updateDadosPessoais };

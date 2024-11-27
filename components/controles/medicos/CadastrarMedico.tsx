@@ -4,12 +4,12 @@ import {
   fetchDadosPessoaisByCPF,
   createDadosPessoais,
 } from "@/hooks/useDadosPessoais";
-import { createPaciente } from "@/hooks/usePacients";
 import ModalCPF from "../ModalCPF";
 import { IFormData } from "@/types/IFormData";
 import ModalForm from "../ModalForm";
+import { createMedico } from "@/hooks/useMedicos";
 
-const CadastrarPaciente = () => {
+const CadastrarMedico = () => {
   const [cpf, setCpf] = useState<string>("");
   const [isCPFModalOpen, setIsCPFModalOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -22,9 +22,8 @@ const CadastrarPaciente = () => {
     cep: "",
     email: "",
     senha: "",
-    tipoSanguineo: "",
-    doencasCronicas: "",
-    alergias: "",
+    crm: "",
+    especialidade: "",
     imgUrl: "",
     cpf: "",
   });
@@ -80,17 +79,12 @@ const CadastrarPaciente = () => {
       if (dadosPessoais) {
         dadosPessoaisId = dadosPessoais.id;
 
-        if (
-          formData.tipoSanguineo &&
-          formData.alergias &&
-          formData.doencasCronicas
-        ) {
-          await createPaciente(
+        if (formData.crm && formData.especialidade) {
+          await createMedico(
             formData.email,
             formData.senha,
-            formData.tipoSanguineo,
-            formData.doencasCronicas,
-            formData.alergias,
+            formData.crm,
+            formData.especialidade,
             dadosPessoaisId
           );
 
@@ -100,7 +94,7 @@ const CadastrarPaciente = () => {
         console.log("Erro ao buscar os dados pessoais após a criação.");
       }
     } catch (error) {
-      console.error("Erro ao cadastrar paciente:", error);
+      console.error("Erro ao cadastrar medico:", error);
     }
   };
 
@@ -114,9 +108,8 @@ const CadastrarPaciente = () => {
       cep: "",
       email: "",
       senha: "",
-      tipoSanguineo: "",
-      doencasCronicas: "",
-      alergias: "",
+      crm: "",
+      especialidade: "",
       imgUrl: "",
       cpf: "",
     });
@@ -125,7 +118,7 @@ const CadastrarPaciente = () => {
   return (
     <div style={{ color: "#696969", textAlign: "center" }}>
       <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>
-        Cadastrar Usuários
+        Cadastrar Médicos
       </Typography>
       <Button
         variant="contained"
@@ -149,7 +142,7 @@ const CadastrarPaciente = () => {
         closeModalForm={closeModalForm}
         open={isModalOpen}
         formData={formData}
-        formType={1}
+        formType={2}
         handleFormSubmit={handleFormSubmit}
         handleInputChange={handleInputChange}
         setFormData={setFormData}
@@ -158,4 +151,4 @@ const CadastrarPaciente = () => {
   );
 };
 
-export default CadastrarPaciente;
+export default CadastrarMedico;

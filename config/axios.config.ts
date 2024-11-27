@@ -15,6 +15,11 @@ const axiosPrescricao = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+const axiosAgendamento = axios.create({
+  baseURL: "http://localhost:4000/api",
+  headers: { "Content-Type": "application/json" },
+});
+
 axiosCadastro.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem("token");
@@ -29,4 +34,4 @@ axiosCadastro.interceptors.request.use(
   }
 );
 
-export { axiosCadastro, axiosCID, axiosPrescricao };
+export { axiosCadastro, axiosCID, axiosPrescricao, axiosAgendamento };
