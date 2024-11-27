@@ -23,7 +23,10 @@ const fetchMedicoById = async (idMedico: number): Promise<IMedico> => {
   }
 };
 
-const fetchMedicos = async (numberPage: number): Promise<IPageable> => {
+const fetchMedicos = async (
+  numberPage: number,
+  pageSize?: number
+): Promise<IPageable> => {
   try {
     const token = sessionStorage.getItem("token");
 
@@ -34,6 +37,7 @@ const fetchMedicos = async (numberPage: number): Promise<IPageable> => {
     const response = await axiosCadastro.get(`/medicos`, {
       params: {
         page: numberPage,
+        size: pageSize || 20,
       },
       headers: {
         Authorization: `Bearer ${token}`,
