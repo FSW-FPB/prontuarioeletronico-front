@@ -89,4 +89,38 @@ const createPaciente = async (
   }
 };
 
-export { fetchPacienteById, createPaciente, fetchPacientes };
+const updatePaciente = async (
+  idPaciente: number,
+  tipoSanguineo: string,
+  doencasCronicas: string,
+  alergia: string
+): Promise<IPaciente> => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token de autenticação não encontrado");
+    }
+
+    const response = await axiosCadastro.put(
+      `/pacientes/${idPaciente}`,
+      {
+        tipoSanguineo,
+        alergia,
+        doencasCronicas,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar paciente", error);
+    throw new Error("Falha ao atualizar paciente");
+  }
+};
+
+export { fetchPacienteById, createPaciente, fetchPacientes, updatePaciente };

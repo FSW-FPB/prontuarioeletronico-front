@@ -17,11 +17,17 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { fetchPacientes } from "@/hooks/usePacients";
+import {
+  fetchPacientes,
+  fetchPacienteById,
+  updatePaciente,
+} from "@/hooks/usePacients";
+import { updateDadosPessoais } from "@/hooks/useDadosPessoais";
 import IPaciente from "@/types/IPaciente";
 import { IPageable } from "@/types/IPageable";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditModal from "../EditModal";
 
 const ListarPacientes = () => {
   const [pageable, setPageable] = useState<IPageable | null>(null);
@@ -34,6 +40,16 @@ const ListarPacientes = () => {
     null
   );
   const [editedName, setEditedName] = useState("");
+  const [editedCpf, setEditedCpf] = useState("");
+  const [editedCep, setEditedCep] = useState("");
+  const [editedTelefone, setEditedTelefone] = useState("");
+  const [editedData_nascimento, setEditedData_nascimento] = useState("");
+  const [editedStatus, setEditedStatus] = useState("");
+  const [editedGenero, setEditedGenero] = useState("");
+  const [editedImgUrl, setEditedImgUrl] = useState("");
+  const [editedTipoSanguineo, setEditedTipoSanguineo] = useState("");
+  const [editedAlergia, setEditedAlergia] = useState("");
+  const [editedDoencasCronicas, setEditedDoencasCronicas] = useState("");
 
   const fetchData = async (pageNumber: number) => {
     setLoading(true);
@@ -43,6 +59,34 @@ const ListarPacientes = () => {
       setPageable(data);
     } catch (err: any) {
       console.error("Erro ao buscar pacientes:", err);
+      setError(err.message || "Erro desconhecido.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenEditModal = async (pacienteId: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchPacienteById(pacienteId);
+      setSelectedPaciente(data);
+      setEditedName(data.dadosPessoais.nome);
+      setEditedCep(data.dadosPessoais.cep);
+      setEditedCpf(data.dadosPessoais.cpf);
+      setEditedData_nascimento(data.dadosPessoais.data_nascimento);
+      setEditedGenero(data.dadosPessoais.genero);
+      setEditedStatus(data.dadosPessoais.status);
+      setEditedTelefone(data.dadosPessoais.telefone);
+      setEditedImgUrl(data.dadosPessoais.imgUrl);
+
+      setEditedDoencasCronicas(data.doencasCronicas);
+      setEditedTipoSanguineo(data.tipoSanguineo);
+      setEditedAlergia(data.alergia);
+
+      setOpenEditModal(true);
+    } catch (err: any) {
+      console.error("Erro ao buscar dados do paciente:", err);
       setError(err.message || "Erro desconhecido.");
     } finally {
       setLoading(false);
@@ -65,21 +109,32 @@ const ListarPacientes = () => {
     }
   };
 
-  const handleOpenEditModal = (paciente: IPaciente) => {
-    setSelectedPaciente(paciente);
-    setEditedName(paciente.dadosPessoais.nome); // Preenche com o nome atual para editar
-    setOpenEditModal(true);
-  };
-
   const handleOpenDeleteModal = (paciente: IPaciente) => {
     setSelectedPaciente(paciente);
     setOpenDeleteModal(true);
   };
 
-  const handleEditPaciente = () => {
+  const handleEditPaciente = async () => {
     if (selectedPaciente) {
-      // Lógica para editar o paciente
-      console.log("Editando paciente", selectedPaciente.id, editedName);
+      await updateDadosPessoais(
+        selectedPaciente.dadosPessoais.id,
+        editedName,
+        editedCpf,
+        editedTelefone,
+        editedCep,
+        editedStatus,
+        editedData_nascimento,
+        editedGenero,
+        editedImgUrl
+      );
+
+      await updatePaciente(
+        selectedPaciente.id,
+        editedTipoSanguineo,
+        editedDoencasCronicas,
+        editedAlergia
+      );
+      fetchData(currentPage);
       setOpenEditModal(false);
     }
   };
@@ -144,7 +199,7 @@ const ListarPacientes = () => {
                             <TableCell>{paciente.dadosPessoais.cpf}</TableCell>
                             <TableCell>
                               <IconButton
-                                onClick={() => handleOpenEditModal(paciente)}
+                                onClick={() => handleOpenEditModal(paciente.id)}
                               >
                                 <EditIcon />
                               </IconButton>
@@ -186,34 +241,41 @@ const ListarPacientes = () => {
                   Próxima
                 </Button>
               </Box>
+
+              <EditModal
+                formType={1}
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                editedCep={editedCep}
+                setEditedCep={setEditedCep}
+                editedCpf={editedCpf}
+                setEditedCpf={setEditedCpf}
+                editedTelefone={editedTelefone}
+                setEditedTelefone={setEditedTelefone}
+                editedName={editedName}
+                setEditedName={setEditedName}
+                editedImgUrl={editedImgUrl}
+                setEditedImgUrl={setEditedImgUrl}
+                editedGenero={editedGenero}
+                setEditedGenero={setEditedGenero}
+                editedData_nascimento={editedData_nascimento}
+                setEditedData_nascimento={setEditedData_nascimento}
+                editedStatus={editedStatus}
+                setEditedStatus={setEditedStatus}
+                editedDoencasCronicas={editedDoencasCronicas}
+                setEditedDoencasCronicas={setEditedDoencasCronicas}
+                editedTipoSanguineo={editedTipoSanguineo}
+                setEditedTipoSanguineo={setEditedTipoSanguineo}
+                editedAlergia={editedAlergia}
+                setEditedAlergia={setEditedAlergia}
+                handleEditPaciente={handleEditPaciente}
+              />
             </>
           ) : (
             <Typography>Nenhum paciente encontrado.</Typography>
           )}
         </>
       )}
-
-      {/* Modal de Edição */}
-      <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)}>
-        <DialogTitle>Editar Paciente</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Nome"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEditModal(false)} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleEditPaciente} color="primary">
-            Salvar
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Modal de Exclusão */}
       <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
