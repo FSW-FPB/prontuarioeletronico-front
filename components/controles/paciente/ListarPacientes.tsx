@@ -21,6 +21,7 @@ import {
   fetchPacientes,
   fetchPacienteById,
   updatePaciente,
+  deletePaciente,
 } from "@/hooks/usePacients";
 import { updateDadosPessoais } from "@/hooks/useDadosPessoais";
 import IPaciente from "@/types/IPaciente";
@@ -28,6 +29,7 @@ import { IPageable } from "@/types/IPageable";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../EditModal";
+import DeleteModal from "../DeleteModal";
 
 const ListarPacientes = () => {
   const [pageable, setPageable] = useState<IPageable | null>(null);
@@ -141,8 +143,8 @@ const ListarPacientes = () => {
 
   const handleDeletePaciente = () => {
     if (selectedPaciente) {
-      // Lógica para excluir o paciente
-      console.log("Excluindo paciente", selectedPaciente.id);
+      deletePaciente(selectedPaciente.id);
+      fetchData(currentPage);
       setOpenDeleteModal(false);
     }
   };
@@ -270,30 +272,19 @@ const ListarPacientes = () => {
                 setEditedAlergia={setEditedAlergia}
                 handleEditPaciente={handleEditPaciente}
               />
+
+              <DeleteModal
+                formType={1}
+                handleDelete={handleDeletePaciente}
+                open={openDeleteModal}
+                setOpen={setOpenDeleteModal}
+              />
             </>
           ) : (
             <Typography>Nenhum paciente encontrado.</Typography>
           )}
         </>
       )}
-
-      {/* Modal de Exclusão */}
-      <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
-        <DialogTitle>Excluir Paciente</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Tem certeza de que deseja excluir este paciente?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteModal(false)} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleDeletePaciente} color="primary">
-            Excluir
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

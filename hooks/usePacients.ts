@@ -123,4 +123,29 @@ const updatePaciente = async (
   }
 };
 
-export { fetchPacienteById, createPaciente, fetchPacientes, updatePaciente };
+const deletePaciente = async (idPaciente: number) => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token de autenticação não encontrado");
+    }
+
+    await axiosCadastro.delete(`/pacientes/${idPaciente}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao deletar paciente", error);
+    throw new Error("Falha ao deletar paciente");
+  }
+};
+
+export {
+  fetchPacienteById,
+  createPaciente,
+  fetchPacientes,
+  updatePaciente,
+  deletePaciente,
+};
