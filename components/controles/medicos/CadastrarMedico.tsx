@@ -125,7 +125,7 @@ const CadastrarMedico = () => {
         sx={{ backgroundColor: "#888", ":hover": { backgroundColor: "#777" } }}
         onClick={() => setIsCPFModalOpen(true)}
       >
-        Cadastrar Médico
+        Cadastrar
       </Button>
 
       {/* Modal para CPF */}

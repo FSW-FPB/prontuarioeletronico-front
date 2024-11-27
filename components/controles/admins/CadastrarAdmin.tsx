@@ -111,7 +111,7 @@ const CadastrarAtendente = () => {
         sx={{ backgroundColor: "#888", ":hover": { backgroundColor: "#777" } }}
         onClick={() => setIsCPFModalOpen(true)}
       >
-        Cadastrar Admin
+        Cadastrar
       </Button>
 
       {/* Modal para CPF */}
