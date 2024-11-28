@@ -1,8 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../../components/sidebar";
 import { FaWalking } from "react-icons/fa";
+import {
+  getAllAgendamentosByPacienteId,
+  getFila,
+} from "@/hooks/useAgendamento";
+import IFila from "@/types/IFila";
+import { useAuth } from "@/context/AuthContext";
 
 function ListEspera() {
+  const [posicao, setPosicao] = useState<number | null>(null);
+  const [filaInfo, setFilaInfo] = useState<IFila | null>(null);
+  const { idUsuario: pacienteId } = useAuth(); // Substituir pelo ID real do paciente
+
+  useEffect(() => {
+    const fetchPosicaoNaFila = async () => {
+      try {
+        if (!pacienteId) return;
+
+        const agendamentos = await getAllAgendamentosByPacienteId(pacienteId);
+        if (agendamentos.length === 0) {
+          console.warn("Nenhum agendamento encontrado para o paciente.");
+          return;
+        }
+        const idConsulta = agendamentos[0].id_consulta;
+
+        const fila = await getFila();
+        const filaAtual = fila.find(
+          (item: IFila) => item.id_consulta === idConsulta
+        );
+
+        if (filaAtual) {
+          setFilaInfo(filaAtual);
+          setPosicao(filaAtual.lugar_fila);
+        } else {
+          console.warn("A consulta não está na fila.");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar a posição na fila:", error);
+      }
+    };
+
+    fetchPosicaoNaFila();
+  }, [pacienteId]);
+
+  if (!pacienteId) {
+    return <div>Carregando...</div>;
+  }
+
   return (
     <div className="flex h-screen">
       <Sidebar activePage="listwaiting" />
@@ -33,12 +78,27 @@ function ListEspera() {
             <FaWalking />
           </div>
 
-          <p className="text-xl font-semibold mb-2 text-gray-900">
-            Você está na posição <span className="font-bold">8</span> da fila.
-          </p>
-          <p className="text-lg text-gray-700 mb-8">
-            Seu atendimento iniciará em breve.
-          </p>
+          {filaInfo ? (
+            <>
+              <p className="text-xl font-semibold mb-2 text-gray-900">
+                Você está na posição{" "}
+                <span className="font-bold">{filaInfo.lugar_fila}</span> da
+                fila.
+              </p>
+              <p className="text-lg text-gray-700 mb-8">
+                Seu atendimento está agendado para{" "}
+                <span className="font-bold">
+                  {filaInfo.horario_atendimento}
+                </span>
+                .
+              </p>
+            </>
+          ) : (
+            <p className="text-lg text-gray-700 mb-8">
+              Buscando sua posição na fila...
+            </p>
+          )}
+
           <p className="text-gray-600 mb-4">
             Lembre-se de ter seus documentos prontos!
           </p>

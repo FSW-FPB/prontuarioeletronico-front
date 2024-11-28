@@ -15,6 +15,7 @@ function Agendamento() {
   const [dataConsulta, setDataConsulta] = useState<string>("");
   const [horaConsulta, setHoraConsulta] = useState<string>("");
   const [motivo, setMotivo] = useState<string>("");
+  const [minDate, setMinDate] = useState<string>("");
 
   useEffect(() => {
     if (idUsuario) {
@@ -28,6 +29,10 @@ function Agendamento() {
   }, [idUsuario]);
 
   useEffect(() => {
+    const today = new Date();
+    const todayString = today.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+    setMinDate(todayString);
+
     const fetchMedicosList = async () => {
       const data = await fetchMedicos(0, 99999);
 
@@ -173,6 +178,7 @@ function Agendamento() {
                 type="date"
                 className="w-full bg-gray-50 border border-teal-500 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 required
+                min={minDate}
                 value={dataConsulta}
                 onChange={(e) => setDataConsulta(e.target.value)}
               />

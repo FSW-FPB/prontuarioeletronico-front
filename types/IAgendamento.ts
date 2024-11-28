@@ -9,4 +9,7 @@ export interface IAgendamento {
   id_status: number;
   updatedAt: "string";
   createdAt: "string";
+  Status?: {
+    descricao: string;
+  };
 }
