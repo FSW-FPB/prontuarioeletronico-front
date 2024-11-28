@@ -70,9 +70,28 @@ const getAllAgendamentosByMedicoId = async (
   }
 };
 
+const updateAgendamento = async (
+  idAgendamento: number,
+  horario_atendimento: string,
+  horario_encerramento: string
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.put(`/consultas/${idAgendamento}`, {
+      horario_atendimento,
+      horario_encerramento,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao pegar dados do agendamento", error);
+    throw new Error("Falha ao pegar dados do agendamento");
+  }
+};
+
 export {
   createAgendamento,
   getAllAgendamentosByPacienteId,
   getFila,
   getAllAgendamentosByMedicoId,
+  updateAgendamento,
 };

@@ -8,28 +8,35 @@ import {
   TableRow,
   Paper,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
 } from "@mui/material";
 import { Edit, Cancel, CheckCircle } from "@mui/icons-material";
 import { IAgendamento } from "@/types/IAgendamento";
-import { getAllAgendamentosByMedicoId } from "@/hooks/useAgendamento";
+import {
+  getAllAgendamentosByMedicoId,
+  updateAgendamento,
+} from "@/hooks/useAgendamento";
 import { useAuth } from "@/context/AuthContext";
 import IPaciente from "@/types/IPaciente";
 import { fetchPacienteById } from "@/hooks/usePacients";
 
-// Função para formatar a data no formato DD/MM/YYYY
 const formatDate = (date: string) => {
   const d = new Date(date);
-  if (isNaN(d.getTime())) return "Data inválida"; // Verifica se a data é válida
+  if (isNaN(d.getTime())) return "Data inválida";
   const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0"); // Mês é 0-indexed
+  const month = String(d.getMonth() + 1).padStart(2, "0");
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 };
 
-// Função para formatar o horário
 const formatTime = (time: string) => {
   const [hours, minutes] = time.split(":");
-  if (!hours || !minutes) return "Hora inválida"; // Verifica se o horário está no formato correto
+  if (!hours || !minutes) return "Hora inválida";
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
     2,
     "0"
@@ -42,59 +49,89 @@ function TabelaAgendamentos() {
     new Map<number, IPaciente>()
   );
   const { idUsuario: medicoId } = useAuth();
+  const [openCancelar, setOpenCancelar] = useState(false);
+  const [openEditar, setOpenEditar] = useState(false);
+  const [openFinalizar, setOpenFinalizar] = useState(false);
+  const [selectedAgendamento, setSelectedAgendamento] =
+    useState<IAgendamento | null>(null);
 
-  // Funções de ação para cada opção
-  const handleAtualizar = (id: number) => {
-    console.log("Atualizar agendamento com ID:", id);
-    // Implemente a lógica para atualizar o agendamento
+  const [horarioAtendimento, setHorarioAtendimento] = useState("");
+  const [horarioEncerramento, setHorarioEncerramento] = useState("");
+
+  const handleCancelar = (agendamento: IAgendamento) => {
+    setSelectedAgendamento(agendamento);
+    setOpenCancelar(true);
   };
 
-  const handleCancelar = (id: number) => {
-    console.log("Cancelar agendamento com ID:", id);
-    // Implemente a lógica para cancelar o agendamento
+  const handleEditar = (agendamento: IAgendamento) => {
+    setSelectedAgendamento(agendamento);
+    setHorarioAtendimento(agendamento.horario_atendimento);
+    setHorarioEncerramento(agendamento.horario_encerramento);
+    setOpenEditar(true);
   };
 
-  const handleFinalizar = (id: number) => {
-    console.log("Finalizar agendamento com ID:", id);
-    // Implemente a lógica para finalizar o agendamento
+  const handleFinalizar = (agendamento: IAgendamento) => {
+    setSelectedAgendamento(agendamento);
+    setOpenFinalizar(true);
+  };
+
+  const handleAtualizar = async () => {
+    if (selectedAgendamento) {
+      await updateAgendamento(
+        selectedAgendamento.id_consulta,
+        horarioAtendimento,
+        horarioEncerramento
+      );
+    }
+    setOpenEditar(false);
+    fetchData(); // Recarrega os dados quando o modal é fechado
+  };
+
+  const handleCancelamentoConfirmado = () => {
+    if (selectedAgendamento) {
+      console.log("Cancelar agendamento", selectedAgendamento.id_consulta);
+      // Lógica de cancelamento
+    }
+    setOpenCancelar(false);
+    fetchData(); // Recarrega os dados quando o modal é fechado
+  };
+
+  const handleFinalizarPrescricao = () => {
+    if (selectedAgendamento) {
+      console.log(
+        "Finalizar agendamento com prescrição",
+        selectedAgendamento.id_consulta
+      );
+      // Lógica de finalizar e criar prescrição
+    }
+    setOpenFinalizar(false);
+    fetchData(); // Recarrega os dados quando o modal é fechado
+  };
+
+  const fetchData = async () => {
+    if (!medicoId) return;
+
+    try {
+      const data = await getAllAgendamentosByMedicoId(medicoId);
+      setAgendamentos(data);
+      const updatedPacientes = new Map<number, IPaciente>();
+      await Promise.all(
+        data.map(async (agendamento) => {
+          if (!updatedPacientes.has(agendamento.id_paciente)) {
+            const paciente = await fetchPacienteById(agendamento.id_paciente);
+            updatedPacientes.set(agendamento.id_paciente, paciente);
+          }
+        })
+      );
+      setPacientes(updatedPacientes);
+    } catch (error) {
+      console.error("Erro ao buscar histórico ou pacientes:", error);
+    }
   };
 
   useEffect(() => {
-    if (!medicoId) {
-      return; // Não faz nada se o pacienteId não estiver disponível
-    }
-
-    const fetchData = async () => {
-      try {
-        const data = await getAllAgendamentosByMedicoId(medicoId);
-        setAgendamentos(data);
-
-        // Buscar pacientes associados aos agendamentos
-        if (data && data.length > 0) {
-          const updatedPacientes = new Map<number, IPaciente>();
-          await Promise.all(
-            data.map(async (agendamento) => {
-              if (!updatedPacientes.has(agendamento.id_paciente)) {
-                const paciente = await fetchPacienteById(
-                  agendamento.id_paciente
-                );
-                updatedPacientes.set(agendamento.id_paciente, paciente);
-              }
-            })
-          );
-          setPacientes(updatedPacientes);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar histórico ou pacientes:", error);
-      }
-    };
-
     fetchData();
   }, [medicoId]);
-
-  if (!medicoId) {
-    return <div>Carregando...</div>;
-  }
 
   return (
     <div className="mt-8 w-full">
@@ -127,19 +164,19 @@ function TabelaAgendamentos() {
                 <TableCell>
                   <IconButton
                     color="primary"
-                    onClick={() => handleAtualizar(agendamento.id_consulta)}
+                    onClick={() => handleEditar(agendamento)}
                   >
                     <Edit />
                   </IconButton>
                   <IconButton
                     color="error"
-                    onClick={() => handleCancelar(agendamento.id_consulta)}
+                    onClick={() => handleCancelar(agendamento)}
                   >
                     <Cancel />
                   </IconButton>
                   <IconButton
                     color="success"
-                    onClick={() => handleFinalizar(agendamento.id_consulta)}
+                    onClick={() => handleFinalizar(agendamento)}
                   >
                     <CheckCircle />
                   </IconButton>
@@ -149,6 +186,99 @@ function TabelaAgendamentos() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Modal de Cancelamento */}
+      <Dialog
+        open={openCancelar}
+        onClose={() => {
+          setOpenCancelar(false);
+          fetchData();
+        }}
+      >
+        <DialogTitle>
+          Tem certeza que deseja cancelar este agendamento?
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenCancelar(false);
+              fetchData();
+            }}
+            color="primary"
+          >
+            Não
+          </Button>
+          <Button onClick={handleCancelamentoConfirmado} color="secondary">
+            Sim
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de Edição */}
+      <Dialog
+        open={openEditar}
+        onClose={() => {
+          setOpenEditar(false);
+          fetchData();
+        }}
+      >
+        <DialogTitle>Editar Agendamento</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Horário de Atendimento"
+            value={horarioAtendimento}
+            onChange={(e) => setHorarioAtendimento(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Horário de Encerramento"
+            value={horarioEncerramento}
+            onChange={(e) => setHorarioEncerramento(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenEditar(false);
+              fetchData();
+            }}
+            color="primary"
+          >
+            Cancelar
+          </Button>
+          <Button onClick={handleAtualizar} color="secondary">
+            Atualizar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de Finalização */}
+      <Dialog
+        open={openFinalizar}
+        onClose={() => {
+          setOpenFinalizar(false);
+          fetchData();
+        }}
+      >
+        <DialogTitle>Finalizar Agendamento com Prescrição</DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenFinalizar(false);
+              fetchData();
+            }}
+            color="primary"
+          >
+            Cancelar
+          </Button>
+          <Button onClick={handleFinalizarPrescricao} color="secondary">
+            Finalizar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
