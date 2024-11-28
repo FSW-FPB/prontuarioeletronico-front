@@ -7,6 +7,10 @@ export interface IAgendamento {
   id_medico: number;
   id_prescricao: string | null;
   id_status: number;
-  updatedAt: "string";
-  createdAt: "string";
+  updatedAt: string;
+  createdAt: string;
+  motivo: string | null;
+  Status?: {
+    descricao: string;
+  };
 }
