@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { IAgendamento } from "@/types/IAgendamento";
 import { useAuth } from "@/context/AuthContext";
-import { getAllAgendamentosByPacienteId } from "@/hooks/useAgendamento";
-import { fetchMedicoById } from "@/hooks/useMedicos";
-import IMedico from "@/types/IMedico";
+import { getAllAgendamentosByMedicoId } from "@/hooks/useAgendamento";
+import IPaciente from "@/types/IPaciente";
 import Link from "next/link";
+import { fetchPacienteById } from "@/hooks/usePacients";
 
 // Função para formatar a data no formato DD/MM/YYYY
 const formatDate = (date: string) => {
@@ -36,57 +36,58 @@ const formatTime = (time: string) => {
   )}`;
 };
 
-function HistoricoMedicoComponent() {
+function HistoricoConsultasComponent() {
   const [historico, setHistorico] = useState<IAgendamento[] | null>(null);
-  const [medicos, setMedicos] = useState<Map<number, IMedico>>(
-    new Map<number, IMedico>()
+  const [pacientes, setPacientes] = useState<Map<number, IPaciente>>(
+    new Map<number, IPaciente>()
   );
-  const { idUsuario: pacienteId } = useAuth();
+  const { idUsuario: medicoId } = useAuth();
 
   // Verifica se pacienteId está disponível dentro do useEffect
   useEffect(() => {
-    if (!pacienteId) {
+    if (!medicoId) {
       return; // Não faz nada se o pacienteId não estiver disponível
     }
 
     const fetchData = async () => {
       try {
-        // Buscar histórico médico
-        const data = await getAllAgendamentosByPacienteId(pacienteId);
+        const data = await getAllAgendamentosByMedicoId(medicoId);
         setHistorico(data);
 
-        // Buscar médicos associados aos agendamentos
+        // Buscar pacientes associados aos agendamentos
         if (data && data.length > 0) {
-          const updatedMedicos = new Map<number, IMedico>();
+          const updatedPacientes = new Map<number, IPaciente>();
           await Promise.all(
             data.map(async (agendamento) => {
-              if (!updatedMedicos.has(agendamento.id_medico)) {
-                const medico = await fetchMedicoById(agendamento.id_medico);
-                updatedMedicos.set(agendamento.id_medico, medico);
+              if (!updatedPacientes.has(agendamento.id_paciente)) {
+                const paciente = await fetchPacienteById(
+                  agendamento.id_paciente
+                );
+                updatedPacientes.set(agendamento.id_paciente, paciente);
               }
             })
           );
-          setMedicos(updatedMedicos);
+          setPacientes(updatedPacientes);
         }
       } catch (error) {
-        console.error("Erro ao buscar histórico ou médicos:", error);
+        console.error("Erro ao buscar histórico ou pacientes:", error);
       }
     };
 
-    fetchData(); // Chama a função quando o componente for montado ou pacienteId mudar
-  }, [pacienteId]); // Dependência do pacienteId
+    fetchData();
+  }, [medicoId]);
 
-  if (!pacienteId) {
-    return <div>Carregando...</div>; // Exibe carregando enquanto pacienteId não estiver disponível
+  if (!medicoId) {
+    return <div>Carregando...</div>;
   }
 
   return (
     <div className="flex">
-      <Sidebar activePage="historico-medico" />
+      <Sidebar activePage="historico-consultas" />
       <main className="flex-1 flex items-start justify-center p-8 bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-9xl mt-5">
           <h1 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-            Histórico Médico
+            Histórico de consultas
           </h1>
 
           <TableContainer component={Paper} sx={{ textWrap: "nowrap" }}>
@@ -98,7 +99,7 @@ function HistoricoMedicoComponent() {
                 <TableRow>
                   <TableCell>Id</TableCell>
                   <TableCell>Data da Consulta</TableCell>
-                  <TableCell>Nome do Médico</TableCell>
+                  <TableCell>Nome do Paciente</TableCell>
                   <TableCell>Especialidade(s)</TableCell>
                   <TableCell>Motivo da Consulta</TableCell>
                   <TableCell>Prescrição</TableCell>
@@ -116,13 +117,13 @@ function HistoricoMedicoComponent() {
                         )}`}
                       </TableCell>
                       <TableCell>
-                        {medicos.get(row.id_medico)
-                          ? medicos.get(row.id_medico)?.dadosPessoais.nome
+                        {pacientes.get(row.id_paciente)
+                          ? pacientes.get(row.id_paciente)?.dadosPessoais.nome
                           : "Carregando..."}
                       </TableCell>
                       <TableCell>
-                        {medicos.get(row.id_medico)
-                          ? medicos.get(row.id_medico)?.especialidade
+                        {pacientes.get(row.id_paciente)
+                          ? pacientes.get(row.id_paciente)?.email
                           : "Carregando..."}
                       </TableCell>
                       <TableCell>
@@ -151,4 +152,4 @@ function HistoricoMedicoComponent() {
   );
 }
 
-export default HistoricoMedicoComponent;
+export default HistoricoConsultasComponent;
