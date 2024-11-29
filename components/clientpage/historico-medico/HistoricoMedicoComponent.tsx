@@ -130,7 +130,10 @@ function HistoricoMedicoComponent() {
                       </TableCell>
                       <TableCell>
                         {row.id_prescricao ? (
-                          <Link href={`/prescricao?id=${row.id_prescricao}`}>
+                          <Link
+                            target="_blank"
+                            href={`/prescricao?id=${row.id_prescricao}`}
+                          >
                             Ver prescrição
                           </Link>
                         ) : (

@@ -18,12 +18,15 @@ import {
 import { Edit, Cancel, CheckCircle } from "@mui/icons-material";
 import { IAgendamento } from "@/types/IAgendamento";
 import {
+  cancelAgendamento,
   getAllAgendamentosByMedicoId,
+  serveAgendamento,
   updateAgendamento,
 } from "@/hooks/useAgendamento";
 import { useAuth } from "@/context/AuthContext";
 import IPaciente from "@/types/IPaciente";
 import { fetchPacienteById } from "@/hooks/usePacients";
+import { createPrescricao } from "@/hooks/usePrescricao";
 
 const formatDate = (date: string) => {
   const d = new Date(date);
@@ -58,6 +61,11 @@ function TabelaAgendamentos() {
   const [horarioAtendimento, setHorarioAtendimento] = useState("");
   const [horarioEncerramento, setHorarioEncerramento] = useState("");
 
+  const [doenca, setDoenca] = useState("");
+  const [CID, setCID] = useState("");
+  const [obs, setObs] = useState("");
+  const [medicamentos, setMedicamentos] = useState([{ nome: "", dosagem: "" }]);
+
   const handleCancelar = (agendamento: IAgendamento) => {
     setSelectedAgendamento(agendamento);
     setOpenCancelar(true);
@@ -87,21 +95,49 @@ function TabelaAgendamentos() {
     fetchData(); // Recarrega os dados quando o modal é fechado
   };
 
-  const handleCancelamentoConfirmado = () => {
+  const handleChangeMedicamento = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    const updatedMedicamentos = [...medicamentos];
+    updatedMedicamentos[index] = {
+      ...updatedMedicamentos[index],
+      [field]: value,
+    };
+    setMedicamentos(updatedMedicamentos);
+  };
+
+  const handleAdicionarMedicamento = () => {
+    setMedicamentos([...medicamentos, { nome: "", dosagem: "" }]);
+  };
+
+  const handleRemoverMedicamento = (index: number) => {
+    setMedicamentos(medicamentos.filter((_, i) => i !== index));
+  };
+
+  const handleCancelamentoConfirmado = async () => {
     if (selectedAgendamento) {
-      console.log("Cancelar agendamento", selectedAgendamento.id_consulta);
-      // Lógica de cancelamento
+      await cancelAgendamento(selectedAgendamento.id_consulta);
     }
     setOpenCancelar(false);
     fetchData(); // Recarrega os dados quando o modal é fechado
   };
 
-  const handleFinalizarPrescricao = () => {
+  const handleFinalizarPrescricao = async () => {
     if (selectedAgendamento) {
-      console.log(
-        "Finalizar agendamento com prescrição",
-        selectedAgendamento.id_consulta
+      const prescricao = await createPrescricao(
+        selectedAgendamento.id_paciente,
+        selectedAgendamento.id_medico,
+        doenca,
+        CID,
+        obs,
+        medicamentos
       );
+
+      if (prescricao) {
+        await serveAgendamento(selectedAgendamento.id_consulta, prescricao._id);
+      }
       // Lógica de finalizar e criar prescrição
     }
     setOpenFinalizar(false);
@@ -162,24 +198,36 @@ function TabelaAgendamentos() {
                 </TableCell>
                 <TableCell>{agendamento.Status?.descricao}</TableCell>
                 <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEditar(agendamento)}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleCancelar(agendamento)}
-                  >
-                    <Cancel />
-                  </IconButton>
-                  <IconButton
-                    color="success"
-                    onClick={() => handleFinalizar(agendamento)}
-                  >
-                    <CheckCircle />
-                  </IconButton>
+                  {agendamento.id_status == 1 ? (
+                    <>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleEditar(agendamento)}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleCancelar(agendamento)}
+                      >
+                        <Cancel />
+                      </IconButton>
+                      <IconButton
+                        color="success"
+                        onClick={() => handleFinalizar(agendamento)}
+                      >
+                        <CheckCircle />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <span
+                      style={{
+                        color: agendamento.id_status == 2 ? "green" : "red",
+                      }}
+                    >
+                      {agendamento.id_status == 2 ? "ATENDIDO" : "CANCELADO"}
+                    </span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -256,22 +304,62 @@ function TabelaAgendamentos() {
       </Dialog>
 
       {/* Modal de Finalização */}
-      <Dialog
-        open={openFinalizar}
-        onClose={() => {
-          setOpenFinalizar(false);
-          fetchData();
-        }}
-      >
+      <Dialog open={openFinalizar} onClose={() => setOpenFinalizar(false)}>
         <DialogTitle>Finalizar Agendamento com Prescrição</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Doença"
+            value={doenca}
+            onChange={(e) => setDoenca(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="CID"
+            value={CID}
+            onChange={(e) => setCID(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Observação"
+            value={obs}
+            onChange={(e) => setObs(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          {medicamentos.map((medicamento, index) => (
+            <div key={index} className="flex gap-4 items-center">
+              <TextField
+                label="Nome do Medicamento"
+                value={medicamento.nome}
+                onChange={(e) =>
+                  handleChangeMedicamento(index, "nome", e.target.value)
+                }
+                margin="normal"
+              />
+              <TextField
+                label="Dosagem"
+                value={medicamento.dosagem}
+                onChange={(e) =>
+                  handleChangeMedicamento(index, "dosagem", e.target.value)
+                }
+                margin="normal"
+              />
+              <Button
+                color="error"
+                onClick={() => handleRemoverMedicamento(index)}
+              >
+                Remover
+              </Button>
+            </div>
+          ))}
+          <Button onClick={handleAdicionarMedicamento} color="primary">
+            Adicionar Medicamento
+          </Button>
+        </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setOpenFinalizar(false);
-              fetchData();
-            }}
-            color="primary"
-          >
+          <Button onClick={() => setOpenFinalizar(false)} color="primary">
             Cancelar
           </Button>
           <Button onClick={handleFinalizarPrescricao} color="secondary">

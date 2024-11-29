@@ -88,10 +88,50 @@ const updateAgendamento = async (
   }
 };
 
+const cancelAgendamento = async (
+  idAgendamento: number
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.patch(
+      `/consultas/${idAgendamento}/status`,
+      {
+        id_status: 3,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cancelar agendamento", error);
+    throw new Error("Falha ao cancelar agendamento");
+  }
+};
+
+const serveAgendamento = async (
+  idAgendamento: number,
+  id_prescricao: string
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.patch(
+      `/consultas/${idAgendamento}/status`,
+      {
+        id_status: 2,
+        id_prescricao,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cancelar agendamento", error);
+    throw new Error("Falha ao cancelar agendamento");
+  }
+};
+
 export {
   createAgendamento,
   getAllAgendamentosByPacienteId,
   getFila,
   getAllAgendamentosByMedicoId,
   updateAgendamento,
+  cancelAgendamento,
+  serveAgendamento,
 };
