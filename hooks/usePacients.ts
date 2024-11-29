@@ -142,10 +142,43 @@ const deletePaciente = async (idPaciente: number) => {
   }
 };
 
+const updatePasswordAndEmailPaciente = async (
+  idPaciente: number,
+  email: string,
+  senha?: string
+): Promise<IPaciente> => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token de autenticação não encontrado");
+    }
+
+    const response = await axiosCadastro.patch(
+      `/pacientes/updateEmailOrPassword/${idPaciente}`,
+      {
+        email,
+        senha,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cadastrar Paciente", error);
+    throw new Error("Falha ao cadastrar Paciente");
+  }
+};
+
 export {
   fetchPacienteById,
   createPaciente,
   fetchPacientes,
   updatePaciente,
   deletePaciente,
+  updatePasswordAndEmailPaciente,
 };
