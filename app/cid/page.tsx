@@ -1,14 +1,14 @@
 "use client";
 import React from "react";
-import Configuracoes from "@/components/clientpage/configuracoes/configuracoes";
 import { AuthProvider } from "@/context/AuthContext";
+import CidComponentPage from "@/components/cid/CidComponent";
 
-function Config() {
+function CidPage() {
   return (
     <AuthProvider>
-      <Configuracoes />
+      <CidComponentPage />
     </AuthProvider>
   );
 }
 
-export default Config;
+export default CidPage;

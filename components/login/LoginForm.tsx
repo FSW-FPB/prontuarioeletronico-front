@@ -1,17 +1,59 @@
-import { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
+import { logarAtendente, logarMedico, logarPaciente } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
-// src/components/LoginForm.tsx
 export default function LoginForm() {
-  const [tipoUsuario, setTipoUsuario] = useState("");
+  const { setToken, setIdUsuario, setTipoUsuario } = useAuth();
+  const [tipoUsuarioSelected, setTipoUsuarioSelected] = useState<string>("1");
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    sessionStorage.clear(); // Limpa o sessionStorage ao carregar a página
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); // Impede o comportamento padrão do formulário
+
+    const loginData = { email, senha };
+
+    let response;
+    if (tipoUsuarioSelected === "1") {
+      response = await logarPaciente(loginData);
+    } else if (tipoUsuarioSelected === "2") {
+      response = await logarAtendente(loginData);
+    } else if (tipoUsuarioSelected === "3") {
+      response = await logarMedico(loginData);
+    }
+
+    if (response && response.success && response.tokenData) {
+      setToken(response.tokenData.token);
+      setTipoUsuario(response.tokenData.tipoUsuario);
+      setIdUsuario(response.tokenData.id_usuario);
+      router.push("/clientpage"); // Navega para a página do cliente
+    } else {
+      setError(response?.error || "Erro desconhecido");
+      console.log(response?.error || "Erro desconhecido");
+    }
+  };
 
   return (
     <div
       className="d-flex flex-column justify-content-center h-100 px-5"
       style={{ width: "100%" }}
     >
-      <form id="login-form" method="POST" className="w-75">
+      <form
+        id="login-form"
+        method="POST"
+        className="w-75"
+        onSubmit={handleLogin}
+      >
         <div className="form-group">
           <label htmlFor="tipo-usuario" className="titulo-input">
             Tipo de Usuário
@@ -21,17 +63,14 @@ export default function LoginForm() {
             name="tipo-usuario"
             className="form-control"
             required
-            value={tipoUsuario}
-            onChange={(e) => setTipoUsuario(e.target.value)}
+            value={tipoUsuarioSelected}
+            onChange={(e) => setTipoUsuarioSelected(e.target.value)} // A mudança de valor é tratada diretamente aqui
           >
-            <option value="paciente" selected>
-              Paciente
-            </option>
-            <option value="administrador">Administrador</option>
-            <option value="medico">Médico</option>
+            <option value="1">Paciente</option>
+            <option value="2">Administrador</option>
+            <option value="3">Médico</option>
           </select>
         </div>
-
         <div className="form-group">
           <label htmlFor="email" className="titulo-input">
             E-mail
@@ -63,7 +102,7 @@ export default function LoginForm() {
             onChange={(e) => setSenha(e.target.value)}
           />
         </div>
-
+        {error && <div className="text-danger">{error}</div>}
         <div className="btn-container text-center">
           <button
             type="submit"
