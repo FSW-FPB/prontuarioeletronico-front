@@ -55,4 +55,83 @@ const getAllAgendamentosByPacienteId = async (
   }
 };
 
-export { createAgendamento, getAllAgendamentosByPacienteId, getFila };
+const getAllAgendamentosByMedicoId = async (
+  idMedico: number
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.get(
+      `/consultas/medico/${idMedico}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao pegar dados do agendamento", error);
+    throw new Error("Falha ao pegar dados do agendamento");
+  }
+};
+
+const updateAgendamento = async (
+  idAgendamento: number,
+  horario_atendimento: string,
+  horario_encerramento: string
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.put(`/consultas/${idAgendamento}`, {
+      horario_atendimento,
+      horario_encerramento,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao pegar dados do agendamento", error);
+    throw new Error("Falha ao pegar dados do agendamento");
+  }
+};
+
+const cancelAgendamento = async (
+  idAgendamento: number
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.patch(
+      `/consultas/${idAgendamento}/status`,
+      {
+        id_status: 3,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cancelar agendamento", error);
+    throw new Error("Falha ao cancelar agendamento");
+  }
+};
+
+const serveAgendamento = async (
+  idAgendamento: number,
+  id_prescricao: string
+): Promise<IAgendamento[]> => {
+  try {
+    const response = await axiosAgendamento.patch(
+      `/consultas/${idAgendamento}/status`,
+      {
+        id_status: 2,
+        id_prescricao,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cancelar agendamento", error);
+    throw new Error("Falha ao cancelar agendamento");
+  }
+};
+
+export {
+  createAgendamento,
+  getAllAgendamentosByPacienteId,
+  getFila,
+  getAllAgendamentosByMedicoId,
+  updateAgendamento,
+  cancelAgendamento,
+  serveAgendamento,
+};
