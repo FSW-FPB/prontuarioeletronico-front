@@ -25,4 +25,16 @@ const createPrescricao = async (
     throw new Error("Falha ao criar Prescricao");
   }
 };
-export { createPrescricao };
+
+const fetchPrescricaoById = async (_id: string): Promise<IPrescricao> => {
+  try {
+    const response = await axiosPrescricao.get(`/prescricoes/${_id}`);
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao pegar Prescricao", error);
+    throw new Error("Falha ao pegar Prescricao");
+  }
+};
+
+export { createPrescricao, fetchPrescricaoById };

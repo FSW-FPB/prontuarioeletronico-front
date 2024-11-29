@@ -15,6 +15,8 @@ import { getAllAgendamentosByMedicoId } from "@/hooks/useAgendamento";
 import IPaciente from "@/types/IPaciente";
 import Link from "next/link";
 import { fetchPacienteById } from "@/hooks/usePacients";
+import IMedico from "@/types/IMedico";
+import { fetchMedicoById } from "@/hooks/useMedicos";
 
 // Função para formatar a data no formato DD/MM/YYYY
 const formatDate = (date: string) => {
@@ -41,6 +43,8 @@ function HistoricoConsultasComponent() {
   const [pacientes, setPacientes] = useState<Map<number, IPaciente>>(
     new Map<number, IPaciente>()
   );
+  const [medico, setMedico] = useState<IMedico | null>(null);
+
   const { idUsuario: medicoId } = useAuth();
 
   // Verifica se pacienteId está disponível dentro do useEffect
@@ -68,6 +72,8 @@ function HistoricoConsultasComponent() {
             })
           );
           setPacientes(updatedPacientes);
+
+          setMedico(await fetchMedicoById(medicoId));
         }
       } catch (error) {
         console.error("Erro ao buscar histórico ou pacientes:", error);
@@ -133,7 +139,14 @@ function HistoricoConsultasComponent() {
                         {row.id_prescricao ? (
                           <Link
                             target="_blank"
-                            href={`/prescricao?id=${row.id_prescricao}`}
+                            href={`/prescricao?id=${row.id_prescricao}&medico=${
+                              medico ? medico.dadosPessoais.nome : null
+                            }&paciente=${
+                              pacientes.get(row.id_paciente)
+                                ? pacientes.get(row.id_paciente)?.dadosPessoais
+                                    .nome
+                                : null
+                            }&crm=${medico ? medico.crm : null}`}
                           >
                             Ver prescrição
                           </Link>
