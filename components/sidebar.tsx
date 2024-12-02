@@ -13,8 +13,10 @@ import {
   faCalendarDays,
   faBedPulse,
   faUserTie,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 type SidebarProps = {
   activePage: string;
@@ -22,6 +24,7 @@ type SidebarProps = {
 
 const Sidebar = ({ activePage }: SidebarProps) => {
   const { tipoUsuario } = useAuth();
+  const router = useRouter();
 
   if (!tipoUsuario) {
     return null;
@@ -97,6 +100,13 @@ const Sidebar = ({ activePage }: SidebarProps) => {
               </li>
             );
           })}
+          <li
+            className="px-4 py-3 flex items-center cursor-pointer hover:bg-teal-800"
+            onClick={() => router.push("/")} // Navegação programática
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} className="w-5 h-5 mr-3" />
+            <span className="text-lg">Sair</span>
+          </li>
         </ul>
       </nav>
     </aside>
